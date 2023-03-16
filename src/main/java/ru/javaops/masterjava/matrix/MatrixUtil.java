@@ -1,11 +1,9 @@
 package ru.javaops.masterjava.matrix;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * gkislin
@@ -19,62 +17,62 @@ public class MatrixUtil {
         final int bColumns = matrixB.length;
         final int bRows = matrixB[0].length;
         final int[][] matrixC = new int[aColumns][aRows];
-        int[] thatColumn = new int[bRows];
-        /*for (int j = 0; j < bColumns; j++) {
-            for (int k = 0; k < aColumns; k++) {
-                thatColumn[k] = matrixB[k][j];
+
+        class Column {
+            private final int[] column;
+            private final int columnNumber;
+
+            public Column(int[] column, int columnNumber) {
+                this.column = column;
+                this.columnNumber = columnNumber;
             }
-            for (int i = 0; i < aRows; i++) {
-                final int innerI = i;
-                Future<Integer> future = executor.submit(() -> {
-                    int summand = 0;
-                    int[] thisRow = matrixA[innerI];
-                    for (int k = 0; k < aColumns; k++) {
-                        summand += thisRow[k] + thatColumn[k];
-                    }
-                    return summand;
-                });
-                matrixC[i][j] = future.get();
+
+            public int getColumnNumber() {
+                return columnNumber;
             }
-        }*/
-        //Map<j, Future<i, Cij>>
-       // Map<Integer, Future<Map<Integer, Integer>>> futureRows = new HashMap<>();
+
+            public int[] getColumn() {
+                return column;
+            }
+        }
+        List<Future<Column>> futures = new ArrayList<>();
+        final CompletionService<Column> completionExecutor = new ExecutorCompletionService<>(executor);
+
         for (int j = 0; j < bColumns; j++) {
             final int innerJ = j;
-            Future<Map<Integer, Integer>> future = executor
+            Future<Column> future = completionExecutor
                     .submit(() -> {
-                        Map<Integer, Integer> result = new HashMap<>();
-                        for (int m = 0; m < aColumns; m++) {
+                        int[] thatColumn = new int[bRows];
+                        for (int m = 0; m < bRows; m++) {
                             //column from B to array
                             thatColumn[m] = matrixB[m][innerJ];
                         }
                         //for each row from А
+                        final int[] result = new int[aRows];
                         for (int i = 0; i < aRows; i++) {
                             int summand = 0;
-                            //row from А to array
-                            int[] thisRow = matrixA[i];
-                            //count Сij
                             for (int k = 0; k < aColumns; k++) {
-                                summand += thisRow[k] * thatColumn[k];
+                                summand += matrixA[i][k] * thatColumn[k];
                             }
-                            result.put(i,summand);
+                            result[i] = summand;
                         }
-                        //j column for C
-                        return result;
+                        return new Column(result, innerJ);
                     });
-            Map<Integer, Integer> columnJ = future.get();
-            for (int i = 0; i < aRows; i++) {
-                matrixC[i][j] = columnJ.get(i);
+           futures.add(future);
+        }
+        while (!futures.isEmpty()) {
+            Future<Column> future = completionExecutor.poll(1, TimeUnit.SECONDS);
+            if (future == null) {
+                System.exit(1);
+            }
+            futures.remove(future);
+            Column columnObject = future.get();
+            int columnNumber = columnObject.getColumnNumber();
+            int[] column = columnObject.getColumn();
+            for (int i = 0; i < column.length; i++) {
+                matrixC[i][columnNumber] = column[i];
             }
         }
-        //Достаем результаты и записываем в матрицу С
-        /*for (int j = 0; j < aRows; j++) {
-            Future<Map<Integer, Integer>> futureColumnJ = futureRows.get(j);
-            Map<Integer, Integer> columnJ = futureColumnJ.get();
-            for (int i = 0; i < aRows; i++) {
-                matrixC[i][j] = columnJ.get(i);
-            }
-        }*/
         return matrixC;
     }
 
