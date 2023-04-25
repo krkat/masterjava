@@ -42,6 +42,17 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element name="Projects">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;sequence>
+ *                   &lt;element ref="{http://javaops.ru}Project"/>
+ *                 &lt;/sequence>
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -61,6 +72,8 @@ public class Payload {
     protected Payload.Cities cities;
     @XmlElement(name = "Users", namespace = "http://javaops.ru", required = true)
     protected Payload.Users users;
+    @XmlElement(name = "Projects", namespace = "http://javaops.ru", required = true)
+    protected Payload.Projects projects;
 
     /**
      * Gets the value of the cities property.
@@ -108,6 +121,30 @@ public class Payload {
      */
     public void setUsers(Payload.Users value) {
         this.users = value;
+    }
+
+    /**
+     * Gets the value of the projects property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Payload.Projects }
+     *     
+     */
+    public Payload.Projects getProjects() {
+        return projects;
+    }
+
+    /**
+     * Sets the value of the projects property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Payload.Projects }
+     *     
+     */
+    public void setProjects(Payload.Projects value) {
+        this.projects = value;
     }
 
 
@@ -166,6 +203,61 @@ public class Payload {
                 city = new ArrayList<CityType>();
             }
             return this.city;
+        }
+
+    }
+
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;sequence>
+     *         &lt;element ref="{http://javaops.ru}Project"/>
+     *       &lt;/sequence>
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "project"
+    })
+    public static class Projects {
+
+        @XmlElement(name = "Project", namespace = "http://javaops.ru", required = true)
+        protected Project project;
+
+        /**
+         * Gets the value of the project property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link Project }
+         *     
+         */
+        public Project getProject() {
+            return project;
+        }
+
+        /**
+         * Sets the value of the project property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link Project }
+         *     
+         */
+        public void setProject(Project value) {
+            this.project = value;
         }
 
     }
