@@ -2,16 +2,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://javaops.ru payload.xsd">
     <Users>
-        <User flag="active" city="kiv">
-            <email>gmail@gmail.com</email>
+        <User email="gmail@gmail.com" flag="active" city="kiv">
             <fullName>Full Name</fullName>
         </User>
-        <User flag="superuser" city="spb">
-            <email>admin@javaops.ru</email>
+        <User email="admin@javaops.ru" flag="superuser" city="spb">
             <fullName>Admin</fullName>
         </User>
-        <User flag="deleted" city="spb">
-            <email>mail@yandex.ru</email>
+        <User email="mail@yandex.ru" flag="deleted" city="spb">
             <fullName>Deleted</fullName>
         </User>
     </Users>
@@ -20,4 +17,57 @@
         <City id="kiv">Киев</City>
         <City id="mnsk">Минск</City>
     </Cities>
+    <Projects>
+        <Project>
+            <name>basejava</name>
+            <description>для новичков</description>
+            <Groups>
+                <Group>
+                    <name>basejava0</name>
+                    <type>FINISHED</type>
+                    <Users>
+                        <User email="user1@gmail.com" flag="active" city="mnsk">
+                            <fullName>User1</fullName>
+                        </User>
+                    </Users>
+                </Group>
+            </Groups>
+        </Project>
+        <Project>
+            <name>topjava</name>
+            <description>посложнее</description>
+            <Groups>
+                <Group>
+                    <name>topjava0</name>
+                    <type>FINISHED</type>
+                    <Users>
+                        <User email="user1@gmail.com" flag="active" city="mnsk">
+                            <fullName>User1</fullName>
+                        </User>
+                    </Users>
+                </Group>
+                <Group>
+                    <name>topjava1</name>
+                    <type>CURRENT</type>
+                    <Users>
+                        <User email="user2@gmail.com" flag="active" city="mnsk">
+                            <fullName>User2</fullName>
+                        </User>
+                        <User email="user3@gmail.com" flag="deleted" city="mnsk">
+                            <fullName>User3</fullName>
+                        </User>
+                    </Users>
+                </Group>
+                <Group>
+                    <name>topjava2</name>
+                    <type>REGISTERING</type>
+                    <Users>
+                        <User email="user1@gmail.com" flag="active" city="mnsk">
+                            <fullName>User1</fullName>
+                        </User>
+                    </Users>
+                </Group>
+            </Groups>
+        </Project>
+    </Projects>
 </Payload>
