@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainXml {
+public class MainXmlStAX {
 
     public static void main(String[] args) {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -35,11 +35,24 @@ public class MainXml {
                             List<String> fullNames = new ArrayList<>();
                             while (reader.hasNext()) {
                                 event = reader.next();
-                                if (event == XMLEvent.END_ELEMENT && ("Groups").equals(reader.getLocalName())) {
+                                if (event == XMLEvent.END_ELEMENT
+                                        && "Groups".equals(reader.getLocalName())) {
                                     break;
                                 }
-                                if (event == XMLEvent.START_ELEMENT && ("fullName").equals(reader.getLocalName())) {
-                                    fullNames.add(reader.getElementText());
+                                String fullName = "";
+                                String email = "";
+                                if (event == XMLEvent.START_ELEMENT
+                                && "User".equals(reader.getLocalName())) {
+                                    email = reader.getAttributeValue(0);
+                                    while (reader.hasNext()) {
+                                        event = reader.next();
+                                        if (event == XMLEvent.START_ELEMENT
+                                                && ("fullName").equals(reader.getLocalName())) {
+                                            fullName = reader.getElementText();
+                                            fullNames.add(fullName+" "+email);
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                             fullNames.stream().sorted().forEach(System.out::println);
