@@ -1,6 +1,8 @@
 
 package ru.javaops.masterjava.xml.schema;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -18,13 +20,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="projectName" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="Groups">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
+ *                 &lt;sequence maxOccurs="unbounded">
  *                   &lt;element ref="{http://javaops.ru}Group"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
@@ -41,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "name",
+    "projectName",
     "description",
     "groups"
 })
@@ -49,34 +51,34 @@ import javax.xml.bind.annotation.XmlType;
 public class Project {
 
     @XmlElement(namespace = "http://javaops.ru", required = true)
-    protected String name;
+    protected String projectName;
     @XmlElement(namespace = "http://javaops.ru", required = true)
     protected String description;
     @XmlElement(name = "Groups", namespace = "http://javaops.ru", required = true)
     protected Project.Groups groups;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the projectName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getProjectName() {
+        return projectName;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the projectName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setProjectName(String value) {
+        this.projectName = value;
     }
 
     /**
@@ -137,7 +139,7 @@ public class Project {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
+     *       &lt;sequence maxOccurs="unbounded">
      *         &lt;element ref="{http://javaops.ru}Group"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
@@ -154,30 +156,35 @@ public class Project {
     public static class Groups {
 
         @XmlElement(name = "Group", namespace = "http://javaops.ru", required = true)
-        protected Group group;
+        protected List<Group> group;
 
         /**
          * Gets the value of the group property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Group }
-         *     
-         */
-        public Group getGroup() {
-            return group;
-        }
-
-        /**
-         * Sets the value of the group property.
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the group property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Group }
-         *     
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getGroup().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Group }
+         * 
+         * 
          */
-        public void setGroup(Group value) {
-            this.group = value;
+        public List<Group> getGroup() {
+            if (group == null) {
+                group = new ArrayList<Group>();
+            }
+            return this.group;
         }
 
     }

@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
+ *                 &lt;sequence maxOccurs="unbounded" minOccurs="0">
  *                   &lt;element ref="{http://javaops.ru}Project"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
@@ -217,7 +217,7 @@ public class Payload {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
+     *       &lt;sequence maxOccurs="unbounded" minOccurs="0">
      *         &lt;element ref="{http://javaops.ru}Project"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
@@ -233,31 +233,36 @@ public class Payload {
     })
     public static class Projects {
 
-        @XmlElement(name = "Project", namespace = "http://javaops.ru", required = true)
-        protected Project project;
+        @XmlElement(name = "Project", namespace = "http://javaops.ru")
+        protected List<Project> project;
 
         /**
          * Gets the value of the project property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Project }
-         *     
-         */
-        public Project getProject() {
-            return project;
-        }
-
-        /**
-         * Sets the value of the project property.
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the project property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Project }
-         *     
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getProject().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Project }
+         * 
+         * 
          */
-        public void setProject(Project value) {
-            this.project = value;
+        public List<Project> getProject() {
+            if (project == null) {
+                project = new ArrayList<Project>();
+            }
+            return this.project;
         }
 
     }

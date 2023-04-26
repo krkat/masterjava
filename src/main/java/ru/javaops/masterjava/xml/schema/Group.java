@@ -1,6 +1,8 @@
 
 package ru.javaops.masterjava.xml.schema;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -19,13 +21,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="groupName" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="type" type="{http://javaops.ru}groupType"/>
  *         &lt;element name="Users">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
+ *                 &lt;sequence maxOccurs="300" minOccurs="0">
  *                   &lt;element ref="{http://javaops.ru}User"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
@@ -42,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "name",
+    "groupName",
     "type",
     "users"
 })
@@ -50,7 +52,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Group {
 
     @XmlElement(namespace = "http://javaops.ru", required = true)
-    protected String name;
+    protected String groupName;
     @XmlElement(namespace = "http://javaops.ru", required = true)
     @XmlSchemaType(name = "string")
     protected GroupType type;
@@ -58,27 +60,27 @@ public class Group {
     protected Group.Users users;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the groupName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getGroupName() {
+        return groupName;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the groupName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setGroupName(String value) {
+        this.groupName = value;
     }
 
     /**
@@ -139,7 +141,7 @@ public class Group {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
+     *       &lt;sequence maxOccurs="300" minOccurs="0">
      *         &lt;element ref="{http://javaops.ru}User"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
@@ -155,31 +157,36 @@ public class Group {
     })
     public static class Users {
 
-        @XmlElement(name = "User", namespace = "http://javaops.ru", required = true)
-        protected User user;
+        @XmlElement(name = "User", namespace = "http://javaops.ru")
+        protected List<User> user;
 
         /**
          * Gets the value of the user property.
          * 
-         * @return
-         *     possible object is
-         *     {@link User }
-         *     
-         */
-        public User getUser() {
-            return user;
-        }
-
-        /**
-         * Sets the value of the user property.
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the user property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link User }
-         *     
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getUser().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link User }
+         * 
+         * 
          */
-        public void setUser(User value) {
-            this.user = value;
+        public List<User> getUser() {
+            if (user == null) {
+                user = new ArrayList<User>();
+            }
+            return this.user;
         }
 
     }

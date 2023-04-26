@@ -64,7 +64,7 @@
     <xs:element name="Project">
         <xs:complexType>
             <xs:sequence>
-                <xs:element type="xs:string" name="name"/>
+                <xs:element type="xs:string" name="projectName"/>
                 <xs:element type="xs:string" name="description"/>
                 <xs:element name="Groups">
                     <xs:complexType>
@@ -80,7 +80,7 @@
     <xs:element name="Group">
         <xs:complexType>
             <xs:sequence>
-                <xs:element type="xs:string" name="name"/>
+                <xs:element type="xs:string" name="groupName"/>
                 <xs:element type="groupType" name="type"/>
                 <xs:element name="Users">
                     <xs:complexType>
