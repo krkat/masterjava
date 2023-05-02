@@ -5,37 +5,40 @@ import ru.javaops.masterjava.xml.schema.*;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.Schemas;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MainXmlJAXB {
-
-    public static void main(String[] args) {
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-             InputStream is = Resources.getResource("payload.xml").openStream()) {
-
-            String projectName = bufferedReader.readLine();
-
-            JaxbParser JAXB_PARSER = new JaxbParser(ObjectFactory.class);
-            JAXB_PARSER.setSchema(Schemas.ofClasspath("payload.xsd"));
-            Payload payload = JAXB_PARSER.unmarshal(is);
-            List<Project> listOfProjects = payload.getProjects().getProject();
-            Project project = listOfProjects.stream()
-                    .filter(x -> projectName.equals(x.getProjectName()))
-                    .findFirst().orElse(null);
-            if (project == null) {
-                System.exit(1);
-            }
-            List<Group> groups = project.getGroups().getGroup();
-            List<User> users = new ArrayList<>();
-            groups.forEach(x -> users.addAll(x.getUsers().getUser()));
-            users.stream().sorted(Comparator.comparing(User::getFullName)).forEach(x -> System.out.println(x.getFullName() + " " + x.getEmail()));
-        } catch (Exception e) {
-            System.out.println(e);
+    private static final Comparator<User> USER_COMPARATOR = Comparator.comparing(User::getValue).thenComparing(User::getEmail);
+    public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            System.out.println("Project name required!");
+            System.exit(1);
         }
+        String projectName = args[0];
+        URL payLoadURL = Resources.getResource("payload.xml");
+        Set<User> users = parseByJAXB(projectName, payLoadURL);
+        users.forEach(u -> System.out.println(u.getValue()));
+    }
+
+    private static Set<User> parseByJAXB(String projectName, URL payloadURL) throws Exception {
+        JaxbParser parser = new JaxbParser(ObjectFactory.class);
+        parser.setSchema(Schemas.ofClasspath("payload.xsd"));
+        Payload payload;
+        try (InputStream is = payloadURL.openStream()) {
+            payload = parser.unmarshal(is);
+        }
+        List<Project> allProjects = payload.getProjects().getProject();
+        Project project = allProjects.stream()
+                .filter(x -> projectName.equals(x.getProjectName()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Неверное имя проекта'" + projectName));
+        Set<Group> groupsOfProject = new HashSet<>(project.getGroup());
+        List<User> sllUsers = payload.getUsers().getUser();
+        return sllUsers.stream()
+                .filter(u -> !Collections.disjoint(groupsOfProject, u.getGroupRefs()))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(USER_COMPARATOR)));
     }
 }

@@ -19,7 +19,18 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;all>
+ *       &lt;sequence>
+ *         &lt;element name="Projects">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;sequence maxOccurs="unbounded">
+ *                   &lt;element ref="{http://javaops.ru}Project"/>
+ *                 &lt;/sequence>
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *         &lt;element name="Cities">
  *           &lt;complexType>
  *             &lt;complexContent>
@@ -42,18 +53,7 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element name="Projects">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence maxOccurs="unbounded" minOccurs="0">
- *                   &lt;element ref="{http://javaops.ru}Project"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/all>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -63,17 +63,43 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-
+    "projects",
+    "cities",
+    "users"
 })
 @XmlRootElement(name = "Payload", namespace = "http://javaops.ru")
 public class Payload {
 
+    @XmlElement(name = "Projects", namespace = "http://javaops.ru", required = true)
+    protected Payload.Projects projects;
     @XmlElement(name = "Cities", namespace = "http://javaops.ru", required = true)
     protected Payload.Cities cities;
     @XmlElement(name = "Users", namespace = "http://javaops.ru", required = true)
     protected Payload.Users users;
-    @XmlElement(name = "Projects", namespace = "http://javaops.ru", required = true)
-    protected Payload.Projects projects;
+
+    /**
+     * Gets the value of the projects property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Payload.Projects }
+     *     
+     */
+    public Payload.Projects getProjects() {
+        return projects;
+    }
+
+    /**
+     * Sets the value of the projects property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Payload.Projects }
+     *     
+     */
+    public void setProjects(Payload.Projects value) {
+        this.projects = value;
+    }
 
     /**
      * Gets the value of the cities property.
@@ -121,30 +147,6 @@ public class Payload {
      */
     public void setUsers(Payload.Users value) {
         this.users = value;
-    }
-
-    /**
-     * Gets the value of the projects property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Payload.Projects }
-     *     
-     */
-    public Payload.Projects getProjects() {
-        return projects;
-    }
-
-    /**
-     * Sets the value of the projects property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Payload.Projects }
-     *     
-     */
-    public void setProjects(Payload.Projects value) {
-        this.projects = value;
     }
 
 
@@ -217,7 +219,7 @@ public class Payload {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence maxOccurs="unbounded" minOccurs="0">
+     *       &lt;sequence maxOccurs="unbounded">
      *         &lt;element ref="{http://javaops.ru}Project"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
@@ -233,7 +235,7 @@ public class Payload {
     })
     public static class Projects {
 
-        @XmlElement(name = "Project", namespace = "http://javaops.ru")
+        @XmlElement(name = "Project", namespace = "http://javaops.ru", required = true)
         protected List<Project> project;
 
         /**
