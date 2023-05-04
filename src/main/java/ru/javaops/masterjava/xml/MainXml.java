@@ -1,6 +1,7 @@
 package ru.javaops.masterjava.xml;
 
 import com.google.common.io.Resources;
+import j2html.tags.ContainerTag;
 import ru.javaops.masterjava.xml.schema.*;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.Schemas;
@@ -8,9 +9,14 @@ import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.io.Writer;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static j2html.TagCreator.*;
 
 public class MainXml {
     private static final Comparator<User> USER_COMPARATOR = Comparator.comparing(User::getValue).thenComparing(User::getEmail);
@@ -24,10 +30,18 @@ public class MainXml {
         Set<User> users = parseByJAXB(projectName, payLoadURL);
         System.out.println("Parsing by JAXB:");
         users.forEach(u -> System.out.println(u.getValue()));
+
         System.out.println();
         System.out.println("Processing by StAX:");
         List<String> namesAndEmails = processByStAX(projectName, payLoadURL);
         namesAndEmails.stream().sorted().forEach(System.out::println);
+
+        System.out.println();
+        String html = toHtml(users, projectName);
+        System.out.println(html);
+        try(Writer writer = Files.newBufferedWriter(Paths.get("out/users.html"))) {
+            writer.write(html);
+        }
     }
 
     private static List<String> processByStAX(String projectName, URL payloadURL) throws Exception {
@@ -81,5 +95,20 @@ public class MainXml {
         return sllUsers.stream()
                 .filter(u -> !Collections.disjoint(groupsOfProject, u.getGroupRefs()))
                 .collect(Collectors.toCollection(() -> new TreeSet<>(USER_COMPARATOR)));
+    }
+
+    private static String toHtml(Set<User> users, String projectName) {
+        final ContainerTag table = table().with(
+                tr().with(th("FullName"), th("Email")))
+                .attr("border","1")
+                .attr("cellpadding","8")
+                .attr("cellspacing","0");
+
+        users.forEach(u -> table.with(
+                tr().with(td(u.getValue()), td(u.getEmail()))));
+        return html().with(
+                head().with(title(projectName + " users")),
+                body().with(h1(projectName + " users"), table)
+        ).render();
     }
 }
