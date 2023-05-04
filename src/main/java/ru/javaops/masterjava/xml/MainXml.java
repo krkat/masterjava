@@ -7,7 +7,6 @@ import ru.javaops.masterjava.xml.util.Schemas;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
@@ -23,68 +22,44 @@ public class MainXml {
         String projectName = args[0];
         URL payLoadURL = Resources.getResource("payload.xml");
         Set<User> users = parseByJAXB(projectName, payLoadURL);
+        System.out.println("Parsing by JAXB:");
         users.forEach(u -> System.out.println(u.getValue()));
-
-        List<String> namesAndEmails = parseByStAX(projectName, payLoadURL);
+        System.out.println();
+        System.out.println("Processing by StAX:");
+        List<String> namesAndEmails = processByStAX(projectName, payLoadURL);
         namesAndEmails.stream().sorted().forEach(System.out::println);
     }
 
-    private static List<String> parseByStAX(String projectName, URL payloadURL) throws Exception {
+    private static List<String> processByStAX(String projectName, URL payloadURL) throws Exception {
         List<String> namesAndEmails = new ArrayList<>();
         try (StaxStreamProcessor processor =
                      new StaxStreamProcessor(payloadURL.openStream())) {
             XMLStreamReader reader = processor.getReader();
-
             List<String> groupsOfProject = new ArrayList<>();
-            //цикл по всей payload
-            int event;
-            while (reader.hasNext()) {
-                event = reader.next();
-                if (event == XMLEvent.END_ELEMENT
-                && "Projects".equals(reader.getLocalName())) {
+            while (processor.startElement("Project","Projects")) {
+                if (projectName.equals(processor.getAttribute("projectName"))) {
+                    while (processor.startElement("Group","Project")) {
+                        groupsOfProject.add(reader.getAttributeValue(null,"groupName"));
+                    }
                     break;
                 }
-                if (event == XMLEvent.START_ELEMENT
-                        && "Project".equals(reader.getLocalName())) {
-                    if ("projectName".equals(reader.getAttributeLocalName(0))
-                            && projectName.equals(reader.getAttributeValue(0))) {
-                        while (reader.hasNext()) {
-                            event = reader.next();
-                            if (event == XMLEvent.END_ELEMENT && "Project".equals(reader.getLocalName())) {
-                                break;
-                            }
-                            if (event == XMLEvent.START_ELEMENT
-                                    && "Group".equals(reader.getLocalName())) {
-                                groupsOfProject.add(reader.getAttributeValue(0));
-                            }
-                        }
-                    }
+            }
+            if (groupsOfProject.isEmpty()) {
+                throw new IllegalArgumentException("Invalid " + projectName + " or no groups");
+            }
+            while (processor.startElement("User","Users")) {
+                String email = processor.getAttribute("email");
+                String groupRefs = processor.getAttribute("groupRefs");
+                String fullName = processor.getText();
+                if (groupRefs == null || groupRefs.isEmpty()) {
+                    continue;
+                }
+                List<String> groupsOfUser = new ArrayList<>();
+                Collections.addAll(groupsOfUser, groupRefs.split(" "));
+                if (!Collections.disjoint(groupsOfProject, groupsOfUser)) {
+                    namesAndEmails.add(fullName + " " + email);
                 }
             }
-            //цикл по Users
-            while (reader.hasNext()) {
-                event = reader.next();
-                if (event == XMLEvent.END_ELEMENT
-                        && "Users".equals(reader.getLocalName())) {
-                    break;
-                }
-                if (event == XMLEvent.START_ELEMENT
-                        && "User".equals(reader.getLocalName())) {
-                    String email = reader.getAttributeValue(0);
-                    String groupRefs = reader.getAttributeValue(3);
-                    if (groupRefs == null || groupRefs.isEmpty()) {
-                        continue;
-                    }
-                    List<String> groupsOfUser = new ArrayList<>();
-                    Collections.addAll(groupsOfUser, groupRefs.split(" "));
-                    if (!Collections.disjoint(groupsOfProject, groupsOfUser)) {
-                        String fullName = reader.getElementText();
-                        namesAndEmails.add(fullName + " " + email);
-                    }
-                }
-            }
-
-
         }
         return namesAndEmails;
     }
