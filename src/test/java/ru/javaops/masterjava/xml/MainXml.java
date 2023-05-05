@@ -6,6 +6,7 @@ import ru.javaops.masterjava.xml.schema.*;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.Schemas;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
+import ru.javaops.masterjava.xml.util.XsltProcessor;
 
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
@@ -40,6 +41,13 @@ public class MainXml {
         String html = toHtml(users, projectName);
         System.out.println(html);
         try(Writer writer = Files.newBufferedWriter(Paths.get("out/users.html"))) {
+            writer.write(html);
+        }
+
+        System.out.println("transformByXslt:");
+        html = transformByXslt();
+        System.out.println(html);
+        try(Writer writer = Files.newBufferedWriter(Paths.get("out/groups.html"))) {
             writer.write(html);
         }
     }
@@ -110,5 +118,15 @@ public class MainXml {
                 head().with(title(projectName + " users")),
                 body().with(h1(projectName + " users"), table)
         ).render();
+    }
+
+    private static String transformByXslt() throws Exception {
+        try (InputStream xsltStream = Resources
+                .getResource("groups.xsl").openStream();
+        InputStream xmlStream = Resources
+                .getResource("payload.xml").openStream()) {
+            XsltProcessor processor = new XsltProcessor(xsltStream);
+            return processor.transform(xmlStream);
+        }
     }
 }
