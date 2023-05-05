@@ -27,14 +27,14 @@ public class MainXml {
             System.exit(1);
         }
         String projectName = args[0];
-        URL payLoadURL = Resources.getResource("payload.xml");
-        Set<User> users = parseByJAXB(projectName, payLoadURL);
+        URL payloadURL = Resources.getResource("payload.xml");
+        Set<User> users = parseByJAXB(projectName, payloadURL);
         System.out.println("Parsing by JAXB:");
         users.forEach(u -> System.out.println(u.getValue()));
 
         System.out.println();
         System.out.println("Processing by StAX:");
-        List<String> namesAndEmails = processByStAX(projectName, payLoadURL);
+        List<String> namesAndEmails = processByStAX(projectName, payloadURL);
         namesAndEmails.stream().sorted().forEach(System.out::println);
 
         System.out.println();
@@ -45,7 +45,7 @@ public class MainXml {
         }
 
         System.out.println("transformByXslt:");
-        html = transformByXslt();
+        html = transformByXslt(projectName, payloadURL);
         System.out.println(html);
         try(Writer writer = Files.newBufferedWriter(Paths.get("out/groups.html"))) {
             writer.write(html);
@@ -120,12 +120,12 @@ public class MainXml {
         ).render();
     }
 
-    private static String transformByXslt() throws Exception {
+    private static String transformByXslt(String projectName, URL payloadURL) throws Exception {
         try (InputStream xsltStream = Resources
                 .getResource("groups.xsl").openStream();
-        InputStream xmlStream = Resources
-                .getResource("payload.xml").openStream()) {
+        InputStream xmlStream = payloadURL.openStream()) {
             XsltProcessor processor = new XsltProcessor(xsltStream);
+            processor.setParameter("projectName", projectName);
             return processor.transform(xmlStream);
         }
     }
